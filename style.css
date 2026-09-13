@@ -326,7 +326,6 @@ tr.tir-row td {
 
 tr.tir-row td:first-child {
   color: var(--accent);
-  padding-left: 18px;
 }
 
 tr.baseline-row td {
