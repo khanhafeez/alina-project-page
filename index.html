@@ -61,11 +61,10 @@
     </figure>
 
     <p class="lede">
-      Training deep learning models to segment taxiway line markings requires labeled data, and producing those labels normally means exhaustive, frame-by-frame manual labeling — slow, costly, and prone to error. ALINA was built to remove that bottleneck.
+      Training deep learning models to segment taxiway line markings requires labeled data, and producing those labels normally means exhaustive, frame-by-frame manual labeling, which is slow, costly, and prone to error. ALINA was built to remove that bottleneck.
     </p>
     <p class="lede">
-      As part of ALINA, a region of interest is drawn once, on the first frame of a video. ALINA warps that region into a bird's-eye view and isolates line marking pixels by color. We also propose CIRCLEDAT, an algorithm that traces the connected line marking pixels to produce the final annotation. ALINA then repeats this automatically on every remaining frame.
-    </p>
+      As part of ALINA, a region of interest is drawn on the first frame of a video. ALINA warps that region into a bird's-eye view and isolates line marking pixels by color. We also propose CIRCLEDAT, an algorithm that traces the connected line marking pixels to produce the final annotation. ALINA uses the initially drawn ROI to label the rest of the frames of a video. </p>
   </div>
 </header>
 
@@ -75,8 +74,8 @@
     <h2>Highlights</h2>
     <div class="stat-grid">
       <div class="stat">
-        <p class="stat-num">One ROI per video</p>
-        <p class="stat-label">That's the only manual step — everything after it runs automatically.</p>
+        <p class="stat-num">No manual pixel labeling</p>
+        <p class="stat-label">Replaces slow and costly manual labeling with only defining one region of interest per video.</p>
       </div>
       <div class="stat">
         <p class="stat-num">Perspective- and weather-agnostic</p>
@@ -97,7 +96,7 @@
     <h2>Method</h2>
     <figure class="fig">
       <img src="assets/method.png" width="1341" height="437" style="max-width:760px;" alt="Figure 2: the ALINA pipeline, from region of interest selection through perspective warping, color thresholding, histogram analysis, CIRCLEDAT traversal, and unwarping back to the original frame." onerror="this.classList.add('missing')">
-      <figcaption style="max-width:760px;">The ALINA pipeline: from ROI definition and perspective warping, through color thresholding and CIRCLEDAT, to the final annotation.</figcaption>
+      <figcaption style="max-width:760px;">The ALINA pipeline: from ROI definition and perspective warping, through color thresholding, histogram analysis and CIRCLEDAT, to unwarping and final annotation.</figcaption>
     </figure>
 
     <ol class="steps">
@@ -108,7 +107,7 @@
       <li>Trace the connected line marking pixels with CIRCLEDAT.</li>
       <li>Unwarp the result and mark the pixels on the original frame.</li>
     </ol>
-    <p class="note-line">No model training involved — the pipeline runs directly on pixel color and geometry.</p>
+    <p class="note-line">ALINA leverages geometric transformations and pixel color of taxiway line markings.</p>
   </section>
 
   <section class="block wrap" id="results">
@@ -117,7 +116,7 @@
     <h3>Qualitative</h3>
     <figure class="fig">
       <img src="assets/qualitative.png" width="1800" height="519" style="max-width:750px;" alt="Annotated taxiway frames across different camera perspectives and weather conditions, with detected line marking pixels shown in red." onerror="this.classList.add('missing')">
-      <figcaption style="max-width:750px;">ALINA's pipeline stages, from ROI definition through the final annotation, shown on frames from three separate videos, each with its own camera angle and taxiway layout.</figcaption>
+      <figcaption style="max-width:750px;">ALINA's steps shown on frames from three separate videos, each with its own camera angle and taxiway layout.</figcaption>
     </figure>
 
     <h3>Detection rate</h3>
@@ -138,7 +137,7 @@
 
     <h3>CIRCLEDAT vs. sliding window</h3>
     <div class="table-block">
-      <p class="table-caption">Comparing CIRCLEDAT against a sliding window search for isolating line marking pixels. Here, <em>m</em> and <em>n</em> are the frame's height and width, and <em>k</em> is the number of pixels belonging to the line marking in that frame.</p>
+      <p class="table-caption">Comparing CIRCLEDAT against the standard sliding window search approach for isolating line marking pixels. Here, <em>m</em> and <em>n</em> denote the frame's height and width, and <em>k</em> is the number of pixels belonging to the line marking in that frame.</p>
       <div class="table-scroll">
         <table>
           <thead>
@@ -154,7 +153,7 @@
 
     <h3>Processing time breakdown</h3>
     <div class="table-block">
-      <p class="table-caption">Average time per frame, by pipeline stage. Measured on CPU.</p>
+      <p class="table-caption">Breakdown of average time per frame for each component of ALINA. Measured on the local CPU.</p>
       <div class="table-scroll">
         <table>
           <thead>
