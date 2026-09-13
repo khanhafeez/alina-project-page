@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALINA: Advanced Line Identification and Notation Algorithm</title>
+<meta name="description" content="ALINA: an annotation framework that labels taxiway line markings across video frames from a single region of interest, using the CIRCLEDAT pixel traversal algorithm.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap topnav-inner">
+    <a href="#overview" class="brand">ALINA</a>
+    <div class="navlinks">
+      <a href="#overview">Overview</a>
+      <a href="#highlights">Highlights</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#citation">Citation</a>
+    </div>
+    <div class="navcta">
+      <a href="https://arxiv.org/abs/2406.08775" target="_blank" rel="noopener noreferrer">Paper</a>
+      <a href="https://github.com/hafeezkhan909/ALINA-Lane-Labeling" target="_blank" rel="noopener noreferrer">Code</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="overview">
+  <div class="wrap">
+    <h1>ALINA: Advanced Line Identification and Notation Algorithm</h1>
+    <p class="venue">CVPR 2024</p>
+
+    <p class="authors">
+      Mohammed Abdul Hafeez Khan<sup>1</sup>,
+      Parth Ganeriwala<sup>1</sup>,
+      Siddhartha Bhattacharyya<sup>1</sup>,
+      Natasha Neogi<sup>2</sup>,
+      Raja Muthalagu<sup>3</sup>
+    </p>
+    <p class="affiliations">
+      <sup>1</sup>Florida Institute of Technology &nbsp;&nbsp; <sup>2</sup>NASA Langley Research Center &nbsp;&nbsp; <sup>3</sup>BITS Pilani Dubai Campus
+    </p>
+
+    <nav class="links">
+      <a href="https://arxiv.org/abs/2406.08775" target="_blank" rel="noopener noreferrer">Paper</a>
+      <span class="sep">&middot;</span>
+      <a href="https://github.com/hafeezkhan909/ALINA-Lane-Labeling" target="_blank" rel="noopener noreferrer">Code</a>
+      <span class="sep">&middot;</span>
+      <a href="#citation">Citation</a>
+    </nav>
+  </div>
+
+  <div class="wrap">
+    <figure class="fig">
+      <img src="assets/teaser.png" width="950" height="380" style="max-width:950px;" alt="Figure 1: the aircraft and camera setup used to record taxiway video, a manually drawn region of interest on one frame, and the resulting ALINA annotation on that frame." onerror="this.classList.add('missing')">
+      <figcaption style="max-width:950px;">Left to right: the camera setup on the aircraft, a region of interest drawn once on a frame, and the taxiway line marking ALINA labels from it.</figcaption>
+    </figure>
+
+    <p class="lede">
+      Supervised learning needs labels, and for taxiway line markings that usually means hand-labeling or crowd-sourcing thousands of video frames. That's slow, expensive, and error-prone, especially across the different camera angles and weather conditions a real taxiway dataset covers.
+    </p>
+    <p class="lede">
+      ALINA needs one region of interest, drawn once on the first frame of a video. It warps that region into a top-down view, isolates line marking pixels by color, and traces the connected pixels with a custom algorithm, CIRCLEDAT. The same region is then reused automatically across every remaining frame, no further input needed.
+    </p>
+  </div>
+</header>
+
+<main>
+
+  <section class="block wrap" id="highlights">
+    <h2>Highlights</h2>
+    <div class="stat-grid">
+      <div class="stat">
+        <p class="stat-num">No manual pixel labeling</p>
+        <p class="stat-label">Replaces slow, costly, crowd-sourced annotation with one region of interest per video.</p>
+      </div>
+      <div class="stat">
+        <p class="stat-num">Perspective- and weather-agnostic</p>
+        <p class="stat-label">Works across different camera angles and both sunny and cloudy conditions.</p>
+      </div>
+      <div class="stat">
+        <p class="stat-num">98.45%</p>
+        <p class="stat-label">Detection rate against a hand-verified ground truth set.</p>
+      </div>
+      <div class="stat">
+        <p class="stat-num">60,249 frames</p>
+        <p class="stat-label">Labeled from the AssistTaxi dataset using this approach.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="method">
+    <h2>Method</h2>
+    <figure class="fig">
+      <img src="assets/method.png" width="599" height="381" style="max-width:480px;" alt="Figure 2: the ALINA pipeline, from region of interest selection through perspective warping, color thresholding, histogram analysis, CIRCLEDAT traversal, and unwarping back to the original frame." onerror="this.classList.add('missing')">
+      <figcaption style="max-width:480px;">One region of interest, drawn once, carries through every stage below for every later frame.</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li>Draw a trapezoidal region of interest on the first frame.</li>
+      <li>Warp the region into a top-down view.</li>
+      <li>Normalize and threshold the color channels to isolate candidate line marking pixels.</li>
+      <li>Scan a histogram of the mask to locate the strongest column of pixels.</li>
+      <li>Trace the connected line marking pixels with CIRCLEDAT.</li>
+      <li>Unwarp the result and mark the pixels on the original frame.</li>
+    </ol>
+    <p class="note-line">The same region of interest is reused for every later frame in the video. No model training involved.</p>
+  </section>
+
+  <section class="block wrap" id="results">
+    <h2>Results</h2>
+
+    <h3>Qualitative</h3>
+    <figure class="fig">
+      <img src="assets/qualitative.png" width="945" height="410" style="max-width:750px;" alt="Annotated taxiway frames across different camera perspectives and weather conditions, with detected line marking pixels shown in red." onerror="this.classList.add('missing')">
+      <figcaption style="max-width:750px;">ALINA labels line markings the same way across camera angles and both sunny and cloudy frames.</figcaption>
+    </figure>
+
+    <h3>Detection rate</h3>
+    <div class="table-block">
+      <p class="table-caption">ALINA vs. CDLEM, evaluated against a 120-frame context-based edge map (CBEM) ground truth set.</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Algorithm</th><th>Detection Rate (%)</th><th>Processing Time (ms)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CDLEM</td><td>91.14</td><td>120.35</td></tr>
+            <tr class="tir-row"><td>ALINA</td><td class="win">98.45</td><td class="win">50.09</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>CIRCLEDAT vs. sliding window</h3>
+    <div class="table-block">
+      <p class="table-caption">Comparing CIRCLEDAT against a sliding window search for isolating line marking pixels.</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Algorithm</th><th>Time Complexity</th><th>Processing Time (ms)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sliding Window</td><td>O(m &times; n)</td><td>10.90</td></tr>
+            <tr class="tir-row"><td>CIRCLEDAT</td><td class="win">O(k)</td><td class="win">3.33</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>Processing time breakdown</h3>
+    <div class="table-block">
+      <p class="table-caption">Average time per frame, by pipeline stage. Measured on CPU.</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Process</th><th>Time (ms)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Perspective Transformation</td><td>4.41</td></tr>
+            <tr><td>Color Feature Normalization</td><td>5.91</td></tr>
+            <tr><td>HSV-based Color Thresholding</td><td>1.05</td></tr>
+            <tr><td>Histogram Analysis</td><td>28.71</td></tr>
+            <tr><td>CIRCLEDAT</td><td>3.33</td></tr>
+            <tr><td>Projection Remapping</td><td>6.68</td></tr>
+            <tr class="tir-row"><td>Total</td><td class="win">50.09</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="citation">
+    <h2>Citation</h2>
+    <div class="bib-box">
+      <button class="copy-btn" onclick="copyBib()">Copy</button>
+      <pre id="bib-text">@InProceedings{Khan_2024_CVPR,
+    author    = {Khan, Mohammed Abdul Hafeez and Ganeriwala, Parth and Bhattacharyya, Siddhartha and Neogi, Natasha and Muthalagu, Raja},
+    title     = {ALINA: Advanced Line Identification and Notation Algorithm},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2024},
+    pages     = {7293-7302}
+}</pre>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Built with <a href="https://opencv.org/" target="_blank" rel="noopener noreferrer">OpenCV</a>, <a href="https://numpy.org/" target="_blank" rel="noopener noreferrer">NumPy</a>, and <a href="https://matplotlib.org/" target="_blank" rel="noopener noreferrer">Matplotlib</a>, and evaluated on the <a href="https://arxiv.org/abs/2306.13106" target="_blank" rel="noopener noreferrer">AssistTaxi</a> dataset. We thank the authors of these projects for making them available to the community.</p>
+    <p class="fine">Mohammed Abdul Hafeez Khan &middot; Parth Ganeriwala &middot; Siddhartha Bhattacharyya &middot; Natasha Neogi &middot; Raja Muthalagu</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
