@@ -57,14 +57,14 @@
   <div class="wrap">
     <figure class="fig">
       <img src="assets/teaser.png" width="1080" height="193" style="max-width:950px;" alt="Figure 1: the aircraft and camera setup used to record taxiway video, a manually drawn region of interest on one frame, and the resulting ALINA annotation on that frame." onerror="this.classList.add('missing')">
-      <figcaption style="max-width:950px;">Left to right: the camera setup on the aircraft, a region of interest drawn once on a frame, and the taxiway line marking ALINA labels from it.</figcaption>
+      <figcaption style="max-width:950px;">(a) The aircraft used for this research. (b), (c) The camera setup at different perspectives inside the aircraft. (d) A region of interest manually defined on a frame. (e) The resulting taxiway line marking annotation from ALINA.</figcaption>
     </figure>
 
     <p class="lede">
-      Supervised learning needs labels, and for taxiway line markings that usually means hand-labeling or crowd-sourcing thousands of video frames. That's slow, expensive, and error-prone, especially across the different camera angles and weather conditions a real taxiway dataset covers.
+      Training deep learning models to segment taxiway line markings requires labeled data, and producing those labels normally means exhaustive, frame-by-frame manual labeling — slow, costly, and prone to error. ALINA was built to remove that bottleneck.
     </p>
     <p class="lede">
-      ALINA needs one region of interest, drawn once on the first frame of a video. It warps that region into a top-down view, isolates line marking pixels by color, and traces the connected pixels with a custom algorithm, CIRCLEDAT. The same region is then reused automatically across every remaining frame, no further input needed.
+      As part of ALINA, a region of interest is drawn once, on the first frame of a video. ALINA warps that region into a bird's-eye view and isolates line marking pixels by color. We also propose CIRCLEDAT, an algorithm that traces the connected line marking pixels to produce the final annotation. ALINA then repeats this automatically on every remaining frame.
     </p>
   </div>
 </header>
@@ -75,8 +75,8 @@
     <h2>Highlights</h2>
     <div class="stat-grid">
       <div class="stat">
-        <p class="stat-num">No manual pixel labeling</p>
-        <p class="stat-label">Replaces slow, costly, crowd-sourced annotation with one region of interest per video.</p>
+        <p class="stat-num">One ROI per video</p>
+        <p class="stat-label">That's the only manual step — everything after it runs automatically.</p>
       </div>
       <div class="stat">
         <p class="stat-num">Perspective- and weather-agnostic</p>
@@ -96,8 +96,8 @@
   <section class="block wrap" id="method">
     <h2>Method</h2>
     <figure class="fig">
-      <img src="assets/method.png" width="1341" height="437" style="max-width:480px;" alt="Figure 2: the ALINA pipeline, from region of interest selection through perspective warping, color thresholding, histogram analysis, CIRCLEDAT traversal, and unwarping back to the original frame." onerror="this.classList.add('missing')">
-      <figcaption style="max-width:480px;">One region of interest, drawn once, carries through every stage below for every later frame.</figcaption>
+      <img src="assets/method.png" width="1341" height="437" style="max-width:760px;" alt="Figure 2: the ALINA pipeline, from region of interest selection through perspective warping, color thresholding, histogram analysis, CIRCLEDAT traversal, and unwarping back to the original frame." onerror="this.classList.add('missing')">
+      <figcaption style="max-width:760px;">The ALINA pipeline: from ROI definition and perspective warping, through color thresholding and CIRCLEDAT, to the final annotation.</figcaption>
     </figure>
 
     <ol class="steps">
@@ -108,7 +108,7 @@
       <li>Trace the connected line marking pixels with CIRCLEDAT.</li>
       <li>Unwarp the result and mark the pixels on the original frame.</li>
     </ol>
-    <p class="note-line">The same region of interest is reused for every later frame in the video. No model training involved.</p>
+    <p class="note-line">No model training involved — the pipeline runs directly on pixel color and geometry.</p>
   </section>
 
   <section class="block wrap" id="results">
@@ -117,7 +117,7 @@
     <h3>Qualitative</h3>
     <figure class="fig">
       <img src="assets/qualitative.png" width="1800" height="519" style="max-width:750px;" alt="Annotated taxiway frames across different camera perspectives and weather conditions, with detected line marking pixels shown in red." onerror="this.classList.add('missing')">
-      <figcaption style="max-width:750px;">ALINA labels line markings the same way across camera angles and both sunny and cloudy frames.</figcaption>
+      <figcaption style="max-width:750px;">ALINA's pipeline stages, from ROI definition through the final annotation, shown on frames from three separate videos, each with its own camera angle and taxiway layout.</figcaption>
     </figure>
 
     <h3>Detection rate</h3>
@@ -138,7 +138,7 @@
 
     <h3>CIRCLEDAT vs. sliding window</h3>
     <div class="table-block">
-      <p class="table-caption">Comparing CIRCLEDAT against a sliding window search for isolating line marking pixels.</p>
+      <p class="table-caption">Comparing CIRCLEDAT against a sliding window search for isolating line marking pixels. Here, <em>m</em> and <em>n</em> are the frame's height and width, and <em>k</em> is the number of pixels belonging to the line marking in that frame.</p>
       <div class="table-scroll">
         <table>
           <thead>
